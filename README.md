@@ -1,8 +1,13 @@
 rir_simulator_python
-#Room impulse response simulator using python
- Copyright 2003 Douglas R. Campbell
- Copyright 2008-2016 Emmanuel Vincent
- Copyright 2017 Sunit Sivasankaran
+--------------------
+Room impulse response simulator using python
+
+Copyright 2003 Douglas R. Campbell
+
+Copyright 2008-2016 Emmanuel Vincent
+
+Copyright 2017 Sunit Sivasankaran
+
  This software is a python version of the stripped-down version of the Roomsim toolbox version 3.3 by Douglas R. Campbell ,
  The matlab function for the stripped down version as well as generating RIRs for moving sources can be found here:
 Roomsimove, http://homepages.loria.fr/evincent/software/Roomsimove.zip
