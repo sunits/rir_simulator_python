@@ -92,6 +92,25 @@ def get_rt60(F_abs, room_size, A):
     RT60=0.1611*V_room/(4*m_air.T*V_room-S*np.log(1-a_bar))
     return RT60
 
+def rt602A(room_obj, rt60):
+'''
+#%% Norris-Eyring formula %%
+ Converts a given reverberation time into a single absorption coefficient for all surfaces 
+'''
+    room_vol = np.prod(room_obj.dim)
+    Sxz=room_obj.dim[0] * room_obj.dim[2]
+    Syz=room_obj.dim[1] * room_obj.dim[2]
+    Sxy=room_obj.dim[0] * room_obj.dim[1]
+    S=2*(Sxz+Syz+Sxy); # Total area of shoebox room surfaces
+    A=1-exp(-0.1611*V_room/(S*RT60))
+    return A
+
+ 
+
+
+
+
+
 class Microphone(object):
     '''
         Deal with a single microphone
