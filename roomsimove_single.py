@@ -102,14 +102,8 @@ def rt602A(room_obj, rt60):
     Syz=room_obj.dim[1] * room_obj.dim[2]
     Sxy=room_obj.dim[0] * room_obj.dim[1]
     S=2*(Sxz+Syz+Sxy); # Total area of shoebox room surfaces
-    A=1-exp(-0.1611*V_room/(S*RT60))
-    return A
-
- 
-
-
-
-
+    absorption = 1-exp(-0.1611*room_vol/(S*RT60))
+    return absorption
 
 class Microphone(object):
     '''
