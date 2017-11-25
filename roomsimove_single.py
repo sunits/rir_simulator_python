@@ -40,33 +40,48 @@ As a module:
     using default values of absorption coeffecients
     -----------------------------------------------
     import roomsimove_single
-    room_dim = [4.2, 3.4, 5.2]
-    room = roomsimove_single.Room(room_dim)
-    mic_pos = [2, 2, 2]
+    rt60 = 0.5 # in seconds
+    room_dim = [4.2, 3.4, 5.2] # in meters
+    absorption = roomsimove_single.rt60_to_absorption(room_dim, rt60)
+    room = roomsimove_single.Room(room_dim, abs_coeff=absorption)
+    mic_pos = [2, 2, 2] # in  meters
     mic1 = roomsimove_single.Microphone(mic_pos, 1,  \
-            orientation=[0.0, 0.0, 0.0], direction='omnidirectional'):
-    mic_pos = [2, 2, 1]
+            orientation=[0.0, 0.0, 0.0], direction='omnidirectional')
+    mic_pos = [2, 2, 1] # in  meters
     mic2 = roomsimove_single.Microphone(mic_pos, 2,  \
-            orientation=[0.0, 0.0, 0.0], direction='cardioid'):
+            orientation=[0.0, 0.0, 0.0], direction='cardioid')
     mics = [mic1, mic2]
     sampling_rate = 16000
-    sim_rir = roomsimove_single.RoomSim(sample_rate, room, mics, RT60=300)
-    source_pos = [1, 1, 1]
+    sim_rir = roomsimove_single.RoomSim(sampling_rate, room, mics, RT60=rt60)
+    source_pos = [1, 1, 1] # in  meters
     rir = sim_rir.create_rir(source_pos)
 
 Appyling RIR to data
 -------------------
-    import fftfilt
+    import olafilt
     import sounfile as sf
     # Assuming single channel data
     [data, fs] = sf.read(wav_file)
-    reverb_data = fftfilt.fftfilt(rir,data)
+    reverb_data = olafilt.olafilt(rir,data)
 '''
 
 import argparse
 import numpy as np
 from scipy.interpolate import interp1d
 import scipy.signal as scipy_sig
+
+
+def do_everything(room_dim, mic_positions, source_pos, rt60):
+    absorption = rt60_to_absorption(room_dim, rt60)
+    room = Room(room_dim, abs_coeff=absorption)
+    mics = []
+    for idx, mic in enumerate(mic_positions):
+        temp_mic = Microphone(mic, idx,  \
+            orientation=[0.0, 0.0, 0.0], direction='omnidirectional')
+        mics.append(temp_mic)
+    sim_rir = RoomSim(16000, room, mics, RT60=rt60)
+    rir = sim_rir.create_rir(source_pos)
+    return rir
 
 def get_rt60(F_abs, room_size, A):
     '''
@@ -81,28 +96,28 @@ def get_rt60(F_abs, room_size, A):
     Lz = room_size[2]
     #Volume of room m^3
     V_room=Lx*Ly*Lz
-    Sxz=Lx*Lz
-    Syz=Ly*Lz
-    Sxy=Lx*Ly
-    S=2*(Sxz+Syz+Sxy)# Total area of shoebox room surfaces
+    area_xz=Lx*Lz
+    area_yz=Ly*Lz
+    area_xy=Lx*Ly
+    total_area = 2*(area_xz+area_yz+area_xy)# Total area of shoebox room surfaces
     # Effective absorbing area of room surfaces at each frequency
-    Se=Syz*(A[0]+A[1])+Sxz*(A[2]+A[3])+Sxy*(A[5]+A[4])
-    a_bar=Se/S # Mean absorption of each room surface
+    Se=area_yz*(A[0]+A[1])+area_xz*(A[2]+A[3])+area_xy*(A[5]+A[4])
+    a_bar=Se/total_area # Mean absorption of each room surface
     # Norris-Eyring estimate adjusted for air absorption
-    RT60=0.1611*V_room/(4*m_air.T*V_room-S*np.log(1-a_bar))
+    RT60=0.1611*V_room/(4*m_air.T*V_room-total_area*np.log(1-a_bar))
     return RT60
 
-def rt602A(room_obj, rt60):
-'''
-#%% Norris-Eyring formula %%
- Converts a given reverberation time into a single absorption coefficient for all surfaces 
-'''
-    room_vol = np.prod(room_obj.dim)
-    Sxz=room_obj.dim[0] * room_obj.dim[2]
-    Syz=room_obj.dim[1] * room_obj.dim[2]
-    Sxy=room_obj.dim[0] * room_obj.dim[1]
-    S=2*(Sxz+Syz+Sxy); # Total area of shoebox room surfaces
-    absorption = 1-exp(-0.1611*room_vol/(S*RT60))
+def rt60_to_absorption(room_obj_dim, rt60):
+    '''
+    Norris-Eyring formula %%
+     Converts a given reverberation time into a single absorption coefficient for all surfaces 
+    '''
+    room_vol = np.prod(room_obj_dim)
+    area_xz=room_obj_dim[0] * room_obj_dim[2]
+    area_yz=room_obj_dim[1] * room_obj_dim[2]
+    area_xy=room_obj_dim[0] * room_obj_dim[1]
+    total_area =2*(area_xz+area_yz+area_xy); # Total area of shoebox room surfaces
+    absorption = 1-np.exp(-0.1611*room_vol/(total_area*rt60))
     return absorption
 
 class Microphone(object):
@@ -129,25 +144,30 @@ class Room(object):
         self.z_val = dim[2]
         self.room_size = np.array(dim)
         self.freq_dep_absorption = {}
-        if F_abs is None or abs_coeff is None:
-            self.__set_default_absorption()
+        if F_abs is None:
+            self.freq_dep_absorption['F_abs'] = np.array([125, 250, 500, 1000, 2000, 4000, 8000])
         else:
             self.freq_dep_absorption['F_abs'] = np.array(F_abs)
-            self.freq_dep_absorption['Ax1'] = np.array(abs_coeff[0])
-            self.freq_dep_absorption['Ax2'] = np.array(abs_coeff[1])
-            self.freq_dep_absorption['Ay1'] = np.array(abs_coeff[2])
-            self.freq_dep_absorption['Ay2'] = np.array(abs_coeff[3])
-            self.freq_dep_absorption['Az1'] = np.array(abs_coeff[4])
-            self.freq_dep_absorption['Az2'] = np.array(abs_coeff[5])
+        if abs_coeff is None:
+            self.__set_absorption()
+        else:
+            if isinstance(abs_coeff, float) or isinstance(abs_coeff, int):
+                self.__set_absorption(abs_val=abs_coeff)
+            else:
+                self.freq_dep_absorption['Ax1'] = np.array(abs_coeff[0])
+                self.freq_dep_absorption['Ax2'] = np.array(abs_coeff[1])
+                self.freq_dep_absorption['Ay1'] = np.array(abs_coeff[2])
+                self.freq_dep_absorption['Ay2'] = np.array(abs_coeff[3])
+                self.freq_dep_absorption['Az1'] = np.array(abs_coeff[4])
+                self.freq_dep_absorption['Az2'] = np.array(abs_coeff[5])
 
-    def __set_default_absorption(self):
-        self.freq_dep_absorption['F_abs'] = np.array([125, 250, 500, 1000, 2000, 4000, 8000])
-        self.freq_dep_absorption['Ax1'] = np.array([0.671] * len(self.freq_dep_absorption['F_abs']))
-        self.freq_dep_absorption['Ax2'] = np.array([0.671] * len(self.freq_dep_absorption['F_abs']))
-        self.freq_dep_absorption['Ay1'] = np.array([0.671] * len(self.freq_dep_absorption['F_abs']))
-        self.freq_dep_absorption['Ay2'] = np.array([0.671] * len(self.freq_dep_absorption['F_abs']))
-        self.freq_dep_absorption['Az1'] = np.array([0.671] * len(self.freq_dep_absorption['F_abs']))
-        self.freq_dep_absorption['Az2'] = np.array([0.671] * len(self.freq_dep_absorption['F_abs']))
+    def __set_absorption(self, abs_val=0.671):
+        self.freq_dep_absorption['Ax1'] = np.array([abs_val] * len(self.freq_dep_absorption['F_abs']))
+        self.freq_dep_absorption['Ax2'] = np.array([abs_val] * len(self.freq_dep_absorption['F_abs']))
+        self.freq_dep_absorption['Ay1'] = np.array([abs_val] * len(self.freq_dep_absorption['F_abs']))
+        self.freq_dep_absorption['Ay2'] = np.array([abs_val] * len(self.freq_dep_absorption['F_abs']))
+        self.freq_dep_absorption['Az1'] = np.array([abs_val] * len(self.freq_dep_absorption['F_abs']))
+        self.freq_dep_absorption['Az2'] = np.array([abs_val] * len(self.freq_dep_absorption['F_abs']))
 
 
 class Config(object):
@@ -251,6 +271,10 @@ class RoomSim(object):
         self.sampling_rate = fs
         self.room = room
         self.mics = mics
+        mic_count = 0
+        for mic in self.mics:
+            mic_count += 1
+            mic._id = str(mic_count)
         self.channels = len(mics)
         self.room_size = room.room_size
         self.F_abs = room.freq_dep_absorption['F_abs']
