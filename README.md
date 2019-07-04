@@ -60,7 +60,7 @@ As a module:
 Appyling RIR to data
 -------------------
     import fftfilt
-    import sounfile as sf
+    import soundfile as sf
     # Assuming single channel data
     [data, fs] = sf.read(wav_file)
     reverb_data = fftfilt.fftfilt(rir,data)
