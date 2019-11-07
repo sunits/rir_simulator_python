@@ -1,4 +1,4 @@
-rir_simulator_python
+Python RIR Simulator
 --------------------
 Room impulse response simulator using python
 
@@ -53,7 +53,7 @@ As a module:
             orientation=[0.0, 0.0, 0.0], direction='cardioid'):
     mics = [mic1, mic2]
     sample_rate = 16000
-    sim_rir = roomsimove_single.RoomSim(sample_rate, room, mics, RT60=300)
+    sim_rir = roomsimove_single.RoomSim(sample_rate, room, mics, RT60=0.3)
     source_pos = [1, 1, 1]
     rir = sim_rir.create_rir(source_pos)
 
