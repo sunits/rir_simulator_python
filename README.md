@@ -52,7 +52,7 @@ As a module:
     mic2 = roomsimove_single.Microphone(mic_pos, 2,  \
             orientation=[0.0, 0.0, 0.0], direction='cardioid'):
     mics = [mic1, mic2]
-    sampling_rate = 16000
+    sample_rate = 16000
     sim_rir = roomsimove_single.RoomSim(sample_rate, room, mics, RT60=300)
     source_pos = [1, 1, 1]
     rir = sim_rir.create_rir(source_pos)
