@@ -60,8 +60,7 @@ Tested for sampling rate of 16000 Hz.
     [data, fs] = sf.read(wav_file)
     reverb_data = fftfilt.fftfilt(rir,data)
 
-Reverberate a signal with randomly generated Room Impulse Response 
-------------------------------------------------------------------
+### Reverberate a signal with randomly generated Room Impulse Response 
     import augment
     src = [np.random.rand(10000), np.random.rand(10000)] # Replace this with your sources
     rir_if = augment.RandomRIR(sampling_rate=16000)
