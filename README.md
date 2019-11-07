@@ -59,8 +59,9 @@ As a module:
 
 Reverberate a signal with randomly generated Room Impulse Response 
 ------------------------------------------------------------------
+    import augment
     src = [np.random.rand(10000), np.random.rand(10000)] # Replace this with your sources
-    rir_if = RandomRIR(sampling_rate=16000)
+    rir_if = augment.RandomRIR(sampling_rate=16000)
     rev_sig = rir_if.reverberate(src, mic_cnt=2)
     # rev_sig contains a list of reverberate sources. Each element in the list is of dimension [src_len x mic_cnt]
 
