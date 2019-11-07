@@ -57,6 +57,14 @@ As a module:
     source_pos = [1, 1, 1]
     rir = sim_rir.create_rir(source_pos)
 
+Applying RIR to data
+-------------------
+    import fftfilt
+    import soundfile as sf
+    # Assuming single channel data
+    [data, fs] = sf.read(wav_file)
+    reverb_data = fftfilt.fftfilt(rir,data)
+
 Reverberate a signal with randomly generated Room Impulse Response 
 ------------------------------------------------------------------
     import augment
@@ -65,13 +73,6 @@ Reverberate a signal with randomly generated Room Impulse Response
     rev_sig = rir_if.reverberate(src, mic_cnt=2)
     # rev_sig contains a list of reverberate sources. Each element in the list is of dimension [src_len x mic_cnt]
 
-Appyling RIR to data
--------------------
-    import fftfilt
-    import soundfile as sf
-    # Assuming single channel data
-    [data, fs] = sf.read(wav_file)
-    reverb_data = fftfilt.fftfilt(rir,data)
 
 
 
