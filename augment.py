@@ -1,7 +1,6 @@
 import olafilt
 import roomsimove_single as rs
 import numpy as np
-import utils
 import ipdb
 
 
@@ -57,6 +56,9 @@ class RandomRIR(object):
         # Arguments:
             src_list: wav signals for different sources
             mic_cnt: Number of micrphones
+
+        # Returns a list of reverberate sources. Each element in the list \
+                is of dimension [src_len x mic_cnt]
         """
         src_cnt = len(src_list)
         rirs = self.create_rir(src_cnt, mic_cnt=mic_cnt)
@@ -74,5 +76,4 @@ class RandomRIR(object):
 if __name__ == '__main__':
     rir_if = RandomRIR(sampling_rate=16000)
     src = [np.random.rand(10000), np.random.rand(10000)]
-    ipdb.set_trace()
-    rev_sig = rir_if.reverberate(src)
+    rev_sig = rir_if.reverberate(src, mic_cnt=2)
