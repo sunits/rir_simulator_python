@@ -57,6 +57,13 @@ As a module:
     source_pos = [1, 1, 1]
     rir = sim_rir.create_rir(source_pos)
 
+Reverberate a signal with randomly generated Room Impulse Response 
+------------------------------------------------------------------
+    src = [np.random.rand(10000), np.random.rand(10000)] # Replace this with your sources
+    rir_if = RandomRIR(sampling_rate=16000)
+    rev_sig = rir_if.reverberate(src, mic_cnt=2)
+    # rev_sig contains a list of reverberate sources. Each element in the list is of dimension [src_len x mic_cnt]
+
 Appyling RIR to data
 -------------------
     import fftfilt
