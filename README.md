@@ -1,5 +1,4 @@
 # Python RIR Simulator
---------------------
 Room impulse response simulator using python
 
 Copyright 2003 Douglas R. Campbell
@@ -22,17 +21,14 @@ RT60 value is assumed to be same for all frequencies.
 Tested for sampling rate of 16000 Hz. 
 
 ## Usage:
--------
 
-As standalone file:
-------------------
+### As standalone file:
     python roomsimove_single.py config_file source_pos_x source_pos_y source_pos_z output_file
 
     The help options will also give the details
     python roomsimove_single.py -h
     
-As a module:
-------------
+### As a module:
     using config_file
     -----------------
     import roomsimove_single
@@ -57,8 +53,7 @@ As a module:
     source_pos = [1, 1, 1]
     rir = sim_rir.create_rir(source_pos)
 
-Applying RIR to data
--------------------
+### Applying RIR to data
     import fftfilt
     import soundfile as sf
     # Assuming single channel data
