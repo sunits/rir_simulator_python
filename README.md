@@ -1,4 +1,4 @@
-Python RIR Simulator
+# Python RIR Simulator
 --------------------
 Room impulse response simulator using python
 
@@ -21,7 +21,7 @@ RT60 value is assumed to be same for all frequencies.
 
 Tested for sampling rate of 16000 Hz. 
 
-Usage:
+## Usage:
 -------
 
 As standalone file:
