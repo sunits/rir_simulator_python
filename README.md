@@ -22,10 +22,12 @@ Tested for sampling rate of 16000 Hz.
 
 ## Usage:
 
-### Reverberate a signal with randomly generated Room Impulse Responses
+### Generate random Room Impulse Responses
     import roomsimove_single
+    # Create an interface. RIRs are not yet generated
     rir_if = roomsimove_single.RandomRIR(sampling_rate=16000)
-    src = [np.random.rand(10000), np.random.rand(10000)]
+    # Supports multiple sources. Each source is placed in a random position inside the same room.
+    src = [np.random.rand(10000), np.random.rand(10000)] 
     rev_sig = rir_if.reverberate(src, mic_cnt=2)
     # rev_sig contains a list of reverberate sources. Each element in the list is of dimension [src_len x mic_cnt]
 
