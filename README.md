@@ -66,7 +66,7 @@ Tested for sampling rate of 16000 Hz.
     source_pos = [1, 1, 1]
     rir = sim_rir.create_rir(source_pos)
 
-### Applying RIR to data
+    # Applying RIR to data
     import fftfilt
     import soundfile as sf
     # Assuming single channel data
