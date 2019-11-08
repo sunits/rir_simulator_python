@@ -3,6 +3,14 @@ import ipdb
 import soundfile as sf
 import olafilt
 import numpy as np
+import ipdb
+
+## To generate random rirs and convolve with signals
+ipdb.set_trace()
+rir_if = roomsimove_single.RandomRIR(sampling_rate=16000)
+src = [np.random.rand(10000), np.random.rand(10000)]
+rev_sig = rir_if.reverberate(src, mic_cnt=2)
+
 
 
 rt60 = 0.4 # in seconds
@@ -33,3 +41,5 @@ data_rev_ch1 = olafilt.olafilt(rir[:,0], data)
 data_rev_ch2 = olafilt.olafilt(rir[:,1], data)
 data_rev = np.array([data_rev_ch1, data_rev_ch2])
 sf.write('data_rev.wav', data_rev.T, fs)
+
+

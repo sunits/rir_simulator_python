@@ -22,6 +22,14 @@ Tested for sampling rate of 16000 Hz.
 
 ## Usage:
 
+### Reverberate a signal with randomly generated Room Impulse Responses
+    import roomsimove_single
+    rir_if = roomsimove_single.RandomRIR(sampling_rate=16000)
+    src = [np.random.rand(10000), np.random.rand(10000)]
+    rev_sig = rir_if.reverberate(src, mic_cnt=2)
+    # rev_sig contains a list of reverberate sources. Each element in the list is of dimension [src_len x mic_cnt]
+
+
 ### As standalone file:
     python roomsimove_single.py config_file source_pos_x source_pos_y source_pos_z output_file
 
@@ -59,13 +67,6 @@ Tested for sampling rate of 16000 Hz.
     # Assuming single channel data
     [data, fs] = sf.read(wav_file)
     reverb_data = fftfilt.fftfilt(rir,data)
-
-### Reverberate a signal with randomly generated Room Impulse Response 
-    import augment
-    src = [np.random.rand(10000), np.random.rand(10000)] # Replace this with your sources
-    rir_if = augment.RandomRIR(sampling_rate=16000)
-    rev_sig = rir_if.reverberate(src, mic_cnt=2)
-    # rev_sig contains a list of reverberate sources. Each element in the list is of dimension [src_len x mic_cnt]
 
 
 
