@@ -9,7 +9,7 @@ Copyright 2017 Sunit Sivasankaran
 
  This software is a python version of the stripped-down version of the Roomsim toolbox version 3.3 by Douglas R. Campbell.
  The matlab function for the stripped down version as well as RIR generation for moving sources can be found here:
-Roomsimove, http://homepages.loria.fr/evincent/software/Roomsimove.zip
+Roomsimove, https://www.irisa.fr/metiss/members/evincent/Roomsimove.zip
  
 If you find the code useful, please cite the following reference:
 Room Impulse Response Generator, https://github.com/sunits/rir_simulator_python
