@@ -258,7 +258,7 @@ class Config(object):
                 temp = line.split()
                 try:
                     self.config[temp[0]] = [float(temp_) for temp_ in temp[1:]]
-                except:
+                except ValueError:
                     self.config[temp[0]] = [temp_ for temp_ in temp[1:]]
         self.config['Fs'] = int(self.config['Fs'][0])
         dict_keys = self.config.keys()
